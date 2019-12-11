@@ -15,9 +15,10 @@ print("GPU is", "available" if tf.config.experimental.list_physical_devices("GPU
 train_validation_split = tfds.Split.TRAIN.subsplit([6, 4])
 
 (train_data, validation_data), test_data = tfds.load(
-    name="imdb_reviews",
-    split=(train_validation_split, tfds.Split.TEST),
-    as_supervised=True)
+    name="amazon_us_reviews/PC_v1_00",
+    split=(train_validation_split, tfds.Split.TEST))
+
+print(test_data)
 
 train_examples_batch, train_labels_batch = next(iter(train_data.batch(10)))
 train_examples_batch
