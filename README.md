@@ -31,4 +31,5 @@ pip install --exists-action i --upgrade boto3
 pip install --exists-action i --upgrade gym
 pip install --exists-action i --upgrade tensorflow
 pip install --exists-action i --upgrade keras-rl2
+pip install tensorflow_datasets
 conda update -y --all
