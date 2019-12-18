@@ -17,7 +17,7 @@ print("GPU is", "available" if tf.config.experimental.list_physical_devices("GPU
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 dataframe = pd.read_csv('amazon_pc_user_reviews.csv')
-dataframe.head()
+print(dataframe.head())
 
 train, test = train_test_split(dataframe, test_size=0.2)
 train, val = train_test_split(train, test_size=0.2)
