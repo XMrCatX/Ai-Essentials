@@ -30,7 +30,7 @@ try:
     with open(csv_file, 'w', encoding="utf-8") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(["product_title","review_body","star_rating"])
-        for data in Data.take(60000):
+        for data in Data.take(1000000):
             item, review, stars = data["data"]["product_title"], data["data"]["review_body"], data["data"]["star_rating"]
             writer.writerow([item.numpy().decode("utf-8"),review.numpy().decode("utf-8"),stars.numpy()])
         print("Dataset saved with name: amazon_pc_user_reviews.csv")
