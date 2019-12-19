@@ -17,6 +17,8 @@ from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 NUM_WORDS = 8000
 SEQ_LEN = 25
+maxlen = 256
+embedding_dim = 50
 
 print("Version: ", tf.__version__)
 print("Eager mode: ", tf.executing_eagerly())
@@ -30,40 +32,30 @@ print(dataframe.head())
 reviews = dataframe['review_body']
 labels = dataframe['star_rating']
 
-review_train, review_validation, y_train, y_validation = train_test_split(reviews, labels, test_size=0.5 ,shuffle=True)
-review_validation, review_test, y_validation, y_test = train_test_split(review_validation, y_validation, test_size=0.5 ,shuffle=True)
+tokenizer = Tokenizer(num_words=NUM_WORDS)
+tokenizer.fit_on_texts(reviews.apply(lambda x: np.str_(x)))
+review_token = tokenizer.texts_to_sequences(reviews.apply(lambda x: np.str_(x)))
+review_normal = pad_sequences(review_token, padding='post', maxlen=maxlen)
+
+review_train, review_validation, y_train, y_validation = train_test_split(review_normal, labels, test_size=0.5 ,shuffle=True)
+review_validation, review_test, y_validation, y_test = train_test_split(review_validation, y_validation, test_size=0.5)
 
 print(len(review_train), 'train examples')
 print(len(review_test), 'test examples')
 
-tokenizer = Tokenizer(num_words=NUM_WORDS)
-tokenizer.fit_on_texts(review_train.apply(lambda x: np.str_(x)))
-
-x_train =  tokenizer.texts_to_sequences(review_train.apply(lambda x: np.str_(x)))
-x_validation = tokenizer.texts_to_sequences(review_validation.apply(lambda x: np.str_(x)))
-x_test = tokenizer.texts_to_sequences(review_test.apply(lambda x: np.str_(x)))
-
 vocab_size = len(tokenizer.word_index) + 1
 print("vocab size: ",vocab_size)
-print("Normal review:")
-print("tokenized review:")
-print(x_train[2])
 
-maxlen = 256
-
-x_train = pad_sequences(x_train, padding='post', maxlen=maxlen)
-x_validation = pad_sequences(x_validation, padding='post', maxlen=maxlen)
-x_test = pad_sequences(x_test, padding='post', maxlen=maxlen)
 print("na Padding:")
-print(x_train[2])
+print(review_train[0])
 
 classifier = LogisticRegression()
-classifier.fit(x_train, y_train)
-score = classifier.score(x_test, y_test)
+classifier.fit(review_train, y_train)
+score = classifier.score(review_test, y_test)
 print("Accuracy:", score)
 
 model = keras.Sequential()
-model.add(layers.Embedding(input_dim=vocab_size, output_dim=50, input_length=maxlen))
+model.add(layers.Embedding(input_dim=vocab_size, output_dim=embedding_dim, input_length=maxlen))
 model.add(layers.GlobalMaxPool1D())
 model.add(layers.Dense(512, activation='relu'))
 model.add(layers.Dense(1000, activation='relu'))
@@ -74,13 +66,13 @@ model.add(layers.Dense(1, activation='sigmoid'))
 
 model.summary()
 
-model.compile(optimizer='adam',loss='mse',metrics=['accuracy'])
+model.compile(optimizer='adam',loss='binary_crossentropy',metrics=['accuracy'])
 
-history = model.fit(x_train, y_train, batch_size=10, validation_data=(x_validation, y_validation) ,epochs=20, verbose=1)
+history = model.fit(review_train, y_train, batch_size=10, validation_data=(review_validation, y_validation) ,epochs=10, verbose=1)
 
-loss, accuracy = model.evaluate(x_train, y_train, verbose=1)
+loss, accuracy = model.evaluate(review_train, y_train, verbose=1)
 print("Training Accuracy: {:.4f}".format(accuracy))
-loss, accuracy = model.evaluate(x_test, y_test, verbose=1)
+loss, accuracy = model.evaluate(review_test, y_test, verbose=1)
 print("Testing Accuracy:  {:.4f}".format(accuracy))
 
 model.save('model.h5')

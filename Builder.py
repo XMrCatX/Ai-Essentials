@@ -25,15 +25,19 @@ print("Hub version: ", hub.__version__)
 print("GPU is", "available" if tf.config.experimental.list_physical_devices("GPU") else "NOT AVAILABLE")
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-dataframe = pd.read_csv('amazon_pc_user_reviews_1000.csv')
+dataframe = pd.read_csv('amazon_pc_user_reviews_2000000.csv')
 print(dataframe.head())
 
 reviews = dataframe['review_body']
 labels = dataframe['star_rating']
 
 tokenizer = Tokenizer(num_words=NUM_WORDS)
-tokenizer.fit_on_texts(reviews)
-review_token =  tokenizer.texts_to_sequences(reviews)
+tokenizer.fit_on_texts(reviews.apply(lambda x: np.str_(x)))
+
+vocab_size = len(tokenizer.word_index) + 1
+print("vocab size: ",vocab_size)
+
+review_token =  tokenizer.texts_to_sequences(reviews.apply(lambda x: np.str_(x)))
 review_normal = pad_sequences(review_token, padding='post', maxlen=maxlen)
 
 review_train, review_validation, y_train, y_validation = train_test_split(review_normal, labels, test_size=0.5 ,shuffle=True)
@@ -42,11 +46,9 @@ review_validation, review_test, y_validation, y_test = train_test_split(review_v
 print(len(review_train), 'train examples')
 print(len(review_test), 'test examples')
 
-vocab_size = len(tokenizer.word_index) + 1
-print("vocab size: ",vocab_size)
 
 print("na Padding:")
-print(review_train)
+print(review_train[0,:])
 
 classifier = LogisticRegression()
 classifier.fit(review_train, y_train)
@@ -57,19 +59,17 @@ embedding_dim = 50
 
 model = keras.Sequential()
 model.add(layers.Embedding(input_dim=vocab_size, output_dim=embedding_dim, input_length=maxlen))
+model.add(layers.Conv1D(128, 5, activation='relu'))
 model.add(layers.GlobalMaxPool1D())
-model.add(layers.Dense(512, activation='relu'))
-model.add(layers.Dense(1000, activation='relu'))
-model.add(layers.Dense(512, activation='relu'))
-model.add(layers.Dense(25, activation='relu'))
 model.add(layers.Dense(10, activation='relu'))
+model.add(layers.Dense(5, activation='relu'))
 model.add(layers.Dense(1, activation='sigmoid'))
 
 model.summary()
 
 model.compile(optimizer='adam',loss='mse',metrics=['accuracy'])
 
-history = model.fit(review_train, y_train, batch_size=10, validation_data=(review_test, y_test) ,epochs=20, verbose=1)
+history = model.fit(review_train, y_train, batch_size=2, validation_data=(review_validation, y_validation) ,epochs=10, verbose=1)
 
 loss, accuracy = model.evaluate(review_train, y_train, verbose=1)
 print("Training Accuracy: {:.4f}".format(accuracy))

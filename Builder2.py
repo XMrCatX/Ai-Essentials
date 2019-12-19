@@ -25,7 +25,7 @@ print("Hub version: ", hub.__version__)
 print("GPU is", "available" if tf.config.experimental.list_physical_devices("GPU") else "NOT AVAILABLE")
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-dataframe = pd.read_csv('amazon_pc_user_reviews_10000.csv')
+dataframe = pd.read_csv('amazon_pc_user_reviews_100000.csv')
 print(dataframe.head())
 
 reviews = dataframe['review_body']
@@ -46,7 +46,7 @@ vocab_size = len(tokenizer.word_index) + 1
 print("vocab size: ",vocab_size)
 
 print("na Padding:")
-print(review_train)
+print(review_train[0])
 
 classifier = LogisticRegression()
 classifier.fit(review_train, y_train)
@@ -67,9 +67,9 @@ model.add(layers.Dense(1, activation='sigmoid'))
 
 model.summary()
 
-model.compile(optimizer='adam',loss='mse',metrics=['accuracy'])
+model.compile(optimizer='adam',loss='msa',metrics=['accuracy'])
 
-history = model.fit(review_train, y_train, batch_size=10, validation_data=(review_test, y_test) ,epochs=20, verbose=1)
+history = model.fit(review_train, y_train, batch_size=10, validation_data=(review_validation, y_validation) ,epochs=20, verbose=1)
 
 loss, accuracy = model.evaluate(review_train, y_train, verbose=1)
 print("Training Accuracy: {:.4f}".format(accuracy))
