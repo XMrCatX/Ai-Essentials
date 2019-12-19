@@ -33,3 +33,7 @@ pip install --exists-action i --upgrade tensorflow
 pip install --exists-action i --upgrade keras-rl2
 pip install tensorflow_datasets
 conda update -y --all
+
+
+
+.apply(lambda x: np.str_(x)
