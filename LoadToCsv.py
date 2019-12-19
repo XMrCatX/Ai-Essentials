@@ -37,7 +37,7 @@ Data, info = tfds.load(name="amazon_us_reviews/PC_v1_00", with_info=True, split=
 assert isinstance(Data, tf.data.Dataset)
 
 print("Dataset info: ", info)
-csv_file = "amazon_pc_user_reviews.csv"
+csv_file = "amazon_pc_user_reviews_100000.csv"
 try:
     with open(csv_file, 'w', encoding="utf-8") as csvfile:
         writer = csv.writer(csvfile)

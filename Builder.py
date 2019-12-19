@@ -22,7 +22,7 @@ print("Hub version: ", hub.__version__)
 print("GPU is", "available" if tf.config.experimental.list_physical_devices("GPU") else "NOT AVAILABLE")
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-dataframe = pd.read_csv('amazon_pc_user_reviews.csv')
+dataframe = pd.read_csv('amazon_pc_user_reviews_10000.csv')
 print(dataframe.head())
 
 reviews = dataframe['review_body']

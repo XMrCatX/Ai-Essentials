@@ -42,22 +42,23 @@ x_train =  tokenizer.texts_to_sequences(review_train.apply(lambda x: np.str_(x))
 x_test = tokenizer.texts_to_sequences(review_test.apply(lambda x: np.str_(x)))
 
 vocab_size = len(tokenizer.word_index) + 1
+print("vocab size: ",vocab_size)
+print("Normal review:")
 print(review_train[2])
+print("tokenized review:")
 print(x_train[2])
 
 maxlen = 256
 
 x_train = pad_sequences(x_train, padding='post', maxlen=maxlen)
 x_test = pad_sequences(x_test, padding='post', maxlen=maxlen)
-print(x_train[0, :])
+print("na Padding:")
+print(x_train[2])
 
 classifier = LogisticRegression()
 classifier.fit(x_train, y_train)
 score = classifier.score(x_test, y_test)
 print("Accuracy:", score)
-
-for value in x_train[:100]:
-    print(value)
 
 embedding_dim = 50
 
