@@ -37,18 +37,18 @@ Data, info = tfds.load(name="amazon_us_reviews/PC_v1_00", with_info=True, split=
 assert isinstance(Data, tf.data.Dataset)
 
 print("Dataset info: ", info)
-csv_file = "amazon_pc_user_reviews_2000000.csv"
+csv_file = "amazon_pc_user_reviews_100000.csv"
 try:
     with open(csv_file, 'w', encoding="utf-8") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(["review_body","star_rating"])
-        for data in Data.take(2000000):
+        for data in Data.take(100000):
             review, stars = data["data"]["review_body"], data["data"]["star_rating"]
             review = review.numpy().decode("utf-8")
             stars = stars.numpy()
             review = review.translate(str.maketrans('', '', string.punctuation)).lower()
             review = review.translate(str.maketrans('', '', digits))
             writer.writerow([review,stars])
-        print("Dataset saved with name: amazon_pc_user_reviews.csv")
+        print("Dataset saved with name: ", csv_file)
 except IOError:
     print("I/O error")
