@@ -28,7 +28,7 @@ print("Hub version: ", hub.__version__)
 print("GPU is", "available" if tf.config.experimental.list_physical_devices("GPU") else "NOT AVAILABLE")
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-dataframe = pd.read_csv('amazon_pc_user_reviews_100000.csv')
+dataframe = pd.read_csv('amazon_pc_user_reviews_no_5.csv')
 print(dataframe.head())
 
 stop_words = set(stopwords.words('english'))
@@ -77,14 +77,13 @@ model.add(layers.GlobalMaxPool1D())
 model.add(layers.Dense(1000, activation='relu'))
 model.add(layers.Dense(500, activation='relu'))
 model.add(layers.Dense(10, activation='relu'))
-model.add(layers.Dense(5, activation='relu'))
 model.add(layers.Dense(1, activation='sigmoid'))
 
 model.summary()
 
-model.compile(optimizer='adam',loss='binary_crossentropy',metrics=['accuracy'])
+model.compile(optimizer='adam',loss='mse',metrics=['accuracy'])
 
-history = model.fit(review_train, y_train, batch_size=10, validation_data=(review_validation, y_validation) ,epochs=10, verbose=1)
+history = model.fit(review_train, y_train, batch_size=100, validation_data=(review_validation, y_validation) ,epochs=10, verbose=1)
 
 loss, accuracy = model.evaluate(review_train, y_train, verbose=1)
 print("Training Accuracy: {:.4f}".format(accuracy))
