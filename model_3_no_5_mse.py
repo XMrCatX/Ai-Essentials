@@ -18,7 +18,7 @@ from tensorflow.keras.preprocessing.text import Tokenizer
 from sklearn.linear_model import LogisticRegression
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 
-NUM_WORDS = 8000
+NUM_WORDS = 8000ada
 SEQ_LEN = 25
 maxlen = 256
 
