@@ -1,5 +1,6 @@
 # Ai-Essentials
 
+#download and install First:
 Use minianaconda -> https://docs.conda.io/en/latest/miniconda.html as python package
 
 after install open anacoda terminal:
@@ -34,6 +35,14 @@ pip install --exists-action i --upgrade keras-rl2
 pip install tensorflow_datasets
 conda update -y --all
 
+#starting setup
 
+first download and make the dataset
 
-.apply(lambda x: np.str_(x)
+Run "LoadToCsv.py" with the command: pyhton LoadToCsv.py
+Run "LoadToCsvNoFive.py" with the command: pyhton LoadToCsvNoFive.py
+
+after the above commands you can run any of the "model" files
+
+exemple command: python model_1_100000_bc.py
+this will run de first model with te full dataset and the loss function binary_crossentropy

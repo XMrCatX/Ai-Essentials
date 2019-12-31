@@ -1,4 +1,4 @@
-# What version of Python do you have?
+# Deze file download en laad de De amazon_us_reviews dataset aangeboden door tesorflow in en vormd deze om het erna weg te scrijven in een ".csv" bestand met 2 colommen genaamd "review_body" en "star_rating"
 from __future__ import absolute_import, division, print_function, unicode_literals
 import os
 import sys

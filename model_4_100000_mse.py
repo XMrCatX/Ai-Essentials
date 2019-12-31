@@ -1,3 +1,5 @@
+# Deze file gebruikt model 3 met de voldedige Dataset, Mean squared error en activation layer softmax
+
 from __future__ import absolute_import, division, print_function, unicode_literals
 import os
 import re
@@ -28,12 +30,15 @@ print("Hub version: ", hub.__version__)
 print("GPU is", "available" if tf.config.experimental.list_physical_devices("GPU") else "NOT AVAILABLE")
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
+# Laad de dataframe met het csv.bestand
 dataframe = pd.read_csv('amazon_pc_user_reviews_100000.csv')
 print(dataframe.head())
 
+# Laad de stopwoorden lijst
 stop_words = set(stopwords.words('english'))
 pat = r'\b(?:{})\b'.format('|'.join(stop_words))
 
+# Verwijderen van de stopwoorden in de dataset
 print(dataframe.iloc[1])
 dataframe['review_body'] = dataframe['review_body'].str.replace(pat, '')
 print(dataframe.iloc[1])
@@ -43,6 +48,7 @@ print(dataframe.iloc[1])
 reviews = dataframe['review_body']
 labels = dataframe['star_rating']
 
+# Woorden index maken van de overgebeleven woorden
 tokenizer = Tokenizer(num_words=NUM_WORDS)
 tokenizer.fit_on_texts(reviews.apply(lambda x: np.str_(x)))
 
@@ -50,9 +56,11 @@ vocab_size = len(tokenizer.word_index) + 1
 print("vocab size: ",vocab_size)
 print(tokenizer.word_index)
 
+# Tokenizen van de dataset
 review_token =  tokenizer.texts_to_sequences(reviews.apply(lambda x: np.str_(x)))
 review_normal = pad_sequences(review_token, padding='post', maxlen=maxlen)
 
+# Test, Train en Validatie sets maken
 review_train, review_validation, y_train, y_validation = train_test_split(review_normal, labels, test_size=0.25 ,shuffle=True)
 review_validation, review_test, y_validation, y_test = train_test_split(review_validation, y_validation, test_size=0.25)
 
@@ -63,6 +71,7 @@ print(len(review_test), 'test examples')
 print("na Padding:")
 print(review_train[0,:])
 
+# Accuracy prediction
 classifier = LogisticRegression()
 classifier.fit(review_train, y_train)
 score = classifier.score(review_test, y_test)
@@ -70,6 +79,7 @@ print("Accuracy:", score)
 
 embedding_dim = 50
 
+# Opstellen van het model
 model = keras.Sequential()
 model.add(layers.Embedding(input_dim=vocab_size, output_dim=embedding_dim, input_length=maxlen))
 model.add(layers.Conv1D(128, 5, activation='relu'))
@@ -85,13 +95,16 @@ model.compile(optimizer='adam',loss='mse',metrics=['accuracy'])
 
 history = model.fit(review_train, y_train, batch_size=100, validation_data=(review_validation, y_validation) ,epochs=10, verbose=1)
 
+# Toonen van de train en test accuracy
 loss, accuracy = model.evaluate(review_train, y_train, verbose=1)
 print("Training Accuracy: {:.4f}".format(accuracy))
 loss, accuracy = model.evaluate(review_test, y_test, verbose=1)
 print("Testing Accuracy:  {:.4f}".format(accuracy))
 
+# Opslaan van het model
 model.save('model.h5')
 
+# Grafiek vooor het visualiseren van de progressie
 import matplotlib.pyplot as plt
 plt.style.use('ggplot')
 
